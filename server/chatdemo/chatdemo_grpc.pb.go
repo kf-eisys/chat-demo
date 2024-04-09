@@ -18,154 +18,158 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ChatServiceClient is the client API for ChatService service.
+// ChatDemoServiceClient is the client API for ChatDemoService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ChatServiceClient interface {
+type ChatDemoServiceClient interface {
+	// 動作確認用RPC
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
-	SendMessage(ctx context.Context, opts ...grpc.CallOption) (ChatService_SendMessageClient, error)
+	// しりとりチャット用RPC
+	WordChainChat(ctx context.Context, opts ...grpc.CallOption) (ChatDemoService_WordChainChatClient, error)
 }
 
-type chatServiceClient struct {
+type chatDemoServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
-	return &chatServiceClient{cc}
+func NewChatDemoServiceClient(cc grpc.ClientConnInterface) ChatDemoServiceClient {
+	return &chatDemoServiceClient{cc}
 }
 
-func (c *chatServiceClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
+func (c *chatDemoServiceClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
 	out := new(HelloResponse)
-	err := c.cc.Invoke(ctx, "/chatdemo.ChatService/SayHello", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chatdemo.ChatDemoService/SayHello", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatServiceClient) SendMessage(ctx context.Context, opts ...grpc.CallOption) (ChatService_SendMessageClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ChatService_ServiceDesc.Streams[0], "/chatdemo.ChatService/SendMessage", opts...)
+func (c *chatDemoServiceClient) WordChainChat(ctx context.Context, opts ...grpc.CallOption) (ChatDemoService_WordChainChatClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ChatDemoService_ServiceDesc.Streams[0], "/chatdemo.ChatDemoService/WordChainChat", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &chatServiceSendMessageClient{stream}
+	x := &chatDemoServiceWordChainChatClient{stream}
 	return x, nil
 }
 
-type ChatService_SendMessageClient interface {
-	Send(*SendMessageRequest) error
-	Recv() (*SendMessageResponse, error)
+type ChatDemoService_WordChainChatClient interface {
+	Send(*WordChain) error
+	Recv() (*WordChain, error)
 	grpc.ClientStream
 }
 
-type chatServiceSendMessageClient struct {
+type chatDemoServiceWordChainChatClient struct {
 	grpc.ClientStream
 }
 
-func (x *chatServiceSendMessageClient) Send(m *SendMessageRequest) error {
+func (x *chatDemoServiceWordChainChatClient) Send(m *WordChain) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *chatServiceSendMessageClient) Recv() (*SendMessageResponse, error) {
-	m := new(SendMessageResponse)
+func (x *chatDemoServiceWordChainChatClient) Recv() (*WordChain, error) {
+	m := new(WordChain)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// ChatServiceServer is the server API for ChatService service.
-// All implementations must embed UnimplementedChatServiceServer
+// ChatDemoServiceServer is the server API for ChatDemoService service.
+// All implementations must embed UnimplementedChatDemoServiceServer
 // for forward compatibility
-type ChatServiceServer interface {
+type ChatDemoServiceServer interface {
+	// 動作確認用RPC
 	SayHello(context.Context, *HelloRequest) (*HelloResponse, error)
-	SendMessage(ChatService_SendMessageServer) error
-	mustEmbedUnimplementedChatServiceServer()
+	// しりとりチャット用RPC
+	WordChainChat(ChatDemoService_WordChainChatServer) error
+	mustEmbedUnimplementedChatDemoServiceServer()
 }
 
-// UnimplementedChatServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedChatServiceServer struct {
+// UnimplementedChatDemoServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedChatDemoServiceServer struct {
 }
 
-func (UnimplementedChatServiceServer) SayHello(context.Context, *HelloRequest) (*HelloResponse, error) {
+func (UnimplementedChatDemoServiceServer) SayHello(context.Context, *HelloRequest) (*HelloResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
-func (UnimplementedChatServiceServer) SendMessage(ChatService_SendMessageServer) error {
-	return status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+func (UnimplementedChatDemoServiceServer) WordChainChat(ChatDemoService_WordChainChatServer) error {
+	return status.Errorf(codes.Unimplemented, "method WordChainChat not implemented")
 }
-func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
+func (UnimplementedChatDemoServiceServer) mustEmbedUnimplementedChatDemoServiceServer() {}
 
-// UnsafeChatServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ChatServiceServer will
+// UnsafeChatDemoServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ChatDemoServiceServer will
 // result in compilation errors.
-type UnsafeChatServiceServer interface {
-	mustEmbedUnimplementedChatServiceServer()
+type UnsafeChatDemoServiceServer interface {
+	mustEmbedUnimplementedChatDemoServiceServer()
 }
 
-func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
-	s.RegisterService(&ChatService_ServiceDesc, srv)
+func RegisterChatDemoServiceServer(s grpc.ServiceRegistrar, srv ChatDemoServiceServer) {
+	s.RegisterService(&ChatDemoService_ServiceDesc, srv)
 }
 
-func _ChatService_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ChatDemoService_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelloRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).SayHello(ctx, in)
+		return srv.(ChatDemoServiceServer).SayHello(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chatdemo.ChatService/SayHello",
+		FullMethod: "/chatdemo.ChatDemoService/SayHello",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(ChatDemoServiceServer).SayHello(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatService_SendMessage_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ChatServiceServer).SendMessage(&chatServiceSendMessageServer{stream})
+func _ChatDemoService_WordChainChat_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ChatDemoServiceServer).WordChainChat(&chatDemoServiceWordChainChatServer{stream})
 }
 
-type ChatService_SendMessageServer interface {
-	Send(*SendMessageResponse) error
-	Recv() (*SendMessageRequest, error)
+type ChatDemoService_WordChainChatServer interface {
+	Send(*WordChain) error
+	Recv() (*WordChain, error)
 	grpc.ServerStream
 }
 
-type chatServiceSendMessageServer struct {
+type chatDemoServiceWordChainChatServer struct {
 	grpc.ServerStream
 }
 
-func (x *chatServiceSendMessageServer) Send(m *SendMessageResponse) error {
+func (x *chatDemoServiceWordChainChatServer) Send(m *WordChain) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *chatServiceSendMessageServer) Recv() (*SendMessageRequest, error) {
-	m := new(SendMessageRequest)
+func (x *chatDemoServiceWordChainChatServer) Recv() (*WordChain, error) {
+	m := new(WordChain)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// ChatService_ServiceDesc is the grpc.ServiceDesc for ChatService service.
+// ChatDemoService_ServiceDesc is the grpc.ServiceDesc for ChatDemoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ChatService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "chatdemo.ChatService",
-	HandlerType: (*ChatServiceServer)(nil),
+var ChatDemoService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "chatdemo.ChatDemoService",
+	HandlerType: (*ChatDemoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SayHello",
-			Handler:    _ChatService_SayHello_Handler,
+			Handler:    _ChatDemoService_SayHello_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SendMessage",
-			Handler:       _ChatService_SendMessage_Handler,
+			StreamName:    "WordChainChat",
+			Handler:       _ChatDemoService_WordChainChat_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package chatdemo;
 
-option go_package = "chatdemo/chatdemo";
-
-service ChatService {
+service ChatDemoService {
+  // 動作確認用RPC
   rpc SayHello (HelloRequest) returns (HelloResponse);
-  rpc SendMessage (stream SendMessageRequest) returns (stream SendMessageResponse);
+  // しりとりチャット用RPC
+  rpc WordChainChat (stream WordChain) returns (stream WordChain);
 }
 
 message HelloRequest {
@@ -17,10 +17,14 @@ message HelloResponse {
   string message = 1;
 }
 
-message SendMessageRequest {
-  string message = 1;
+message WordChain {
+  string word = 1;
+  Result result = 2;
+  string message = 3;
 }
 
-message SendMessageResponse {
-  string message = 1;
+enum Result {
+  RESULT_UNSPECIFIED = 0;
+  RESULT_WIN = 1;
+  RESULT_LOSE = 2;
 }

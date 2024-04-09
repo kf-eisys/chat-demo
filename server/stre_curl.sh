@@ -1,15 +1,12 @@
 grpcurl -plaintext -d '
 {
-  "message": "hoge"
+  "word": "がいあ"
 }
 {
-  "message": "fuga"
+  "word": "い"
 }
 {
-  "message": "piyo"
-}
-{
-  "message": "さようなら"
+  "word": "みらい"
 }
 ' \
-localhost:50051 chatdemo.ChatService/SendMessage
+localhost:50051 chatdemo.ChatDemoService/WordChainChat
