@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
-	"math/rand"
 	"net"
 	"strings"
 
 	pb "chatdemo/chatdemo"
 
-	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -94,10 +94,13 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func (s *server) SendMessage(stream pb.ChatService_SendMessageServer) error {
-	initFlg := true
-
 	for {
 		req, err := stream.Recv()
+		// チャットだとこれで良いか要確認
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+
 		if err != nil {
 			log.Printf("err: %v\n", err)
 			return err
@@ -105,32 +108,48 @@ func (s *server) SendMessage(stream pb.ChatService_SendMessageServer) error {
 
 		log.Printf("req: %v\n", req)
 
-		if initFlg {
-			initFlg = false
-			log.Println("会話をしましょう。やめたくなったら「さようなら」と言ってください。")
-			continue
-		}
-
-		var resp string
-
-		// レスポンスを返す
-		defer func() {
-			if err := stream.Send(&pb.SendMessageResponse{Message: resp}); err != nil {
+		if req.GetMessage() == "さようなら" {
+			// 終端のメッセージを送信して終了
+			if err := stream.Send(&pb.SendMessageResponse{Message: "さようなら、今までありがとう"}); err != nil {
 				log.Printf("err: %v\n", err)
+				return err
 			}
-		}()
 
-		userWord := req.GetMessage()
-		if lo.Contains(ngWord, userWord) {
-			resp = "下ネタを言う人とは話しません"
 			return nil
 		}
 
-		if userWord == "さようなら" {
-			resp = "さようなら、今までありがとう"
-			return nil
+		resp := fmt.Sprintf("Received: %v", req.GetMessage())
+		if err := stream.Send(&pb.SendMessageResponse{Message: resp}); err != nil {
+			log.Printf("err: %v\n", err)
+			return err
 		}
 
-		resp = reply[rand.Intn(len(reply))]
+		// var resp string
+
+		// // レスポンスを返す
+		// defer func() {
+		// 	if err := stream.Send(&pb.SendMessageResponse{Message: resp}); err != nil {
+		// 		log.Printf("err: %v\n", err)
+		// 	}
+		// }()
+
+		// if initFlg {
+		// 	resp = "こんにちは、私はチャットボットです。終了する場合は「さようなら」と言ってください"
+		// 	initFlg = false
+		// 	continue
+		// }
+
+		// userWord := req.GetMessage()
+		// if lo.Contains(ngWord, userWord) {
+		// 	resp = "下ネタを言う人とは話しません"
+		// 	return nil
+		// }
+
+		// if userWord == "さようなら" {
+		// 	resp = "さようなら、今までありがとう"
+		// 	return nil
+		// }
+
+		// resp = reply[rand.Intn(len(reply))]
 	}
 }
