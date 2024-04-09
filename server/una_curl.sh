@@ -1,5 +1,5 @@
 grpcurl -plaintext -d '
 {
-  "name": "hoge"
+  "name": "fuga"
 }' \
-localhost:50051 chatdemo.ChatService/SayHello
+localhost:50051 chatdemo.ChatDemoService/SayHello
