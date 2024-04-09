@@ -2,20 +2,23 @@
 # Source: chatdemo/chatdemo.proto for package 'chatdemo'
 
 require 'grpc'
-require 'chatdemo/chatdemo_pb'
+# require 'chatdemo/chatdemo_pb' # Load Error発生するので直接修正
+require 'chatdemo_pb'
 
 module Chatdemo
-  module ChatService
+  module ChatDemoService
     class Service
 
       include ::GRPC::GenericService
 
       self.marshal_class_method = :encode
       self.unmarshal_class_method = :decode
-      self.service_name = 'chatdemo.ChatService'
+      self.service_name = 'chatdemo.ChatDemoService'
 
+      # 動作確認用RPC
       rpc :SayHello, ::Chatdemo::HelloRequest, ::Chatdemo::HelloResponse
-      rpc :SendMessage, stream(::Chatdemo::SendMessageRequest), stream(::Chatdemo::SendMessageResponse)
+      # しりとりチャット用RPC
+      rpc :WordChainChat, stream(::Chatdemo::WordChain), stream(::Chatdemo::WordChain)
     end
 
     Stub = Service.rpc_stub_class

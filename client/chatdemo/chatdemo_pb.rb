@@ -5,7 +5,7 @@
 require 'google/protobuf'
 
 
-descriptor_data = "\n\x17\x63hatdemo/chatdemo.proto\x12\x08\x63hatdemo\"\"\n\x0cHelloRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\")\n\rHelloResponse\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message\".\n\x12SendMessageRequest\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message\"/\n\x13SendMessageResponse\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message2\x9a\x01\n\x0b\x43hatService\x12;\n\x08SayHello\x12\x16.chatdemo.HelloRequest\x1a\x17.chatdemo.HelloResponse\x12N\n\x0bSendMessage\x12\x1c.chatdemo.SendMessageRequest\x1a\x1d.chatdemo.SendMessageResponse(\x01\x30\x01\x42\x13Z\x11\x63hatdemo/chatdemob\x06proto3"
+descriptor_data = "\n\x17\x63hatdemo/chatdemo.proto\x12\x08\x63hatdemo\"\"\n\x0cHelloRequest\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\")\n\rHelloResponse\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message\"c\n\tWordChain\x12\x12\n\x04word\x18\x01 \x01(\tR\x04word\x12(\n\x06result\x18\x02 \x01(\x0e\x32\x10.chatdemo.ResultR\x06result\x12\x18\n\x07message\x18\x03 \x01(\tR\x07message*A\n\x06Result\x12\x16\n\x12RESULT_UNSPECIFIED\x10\x00\x12\x0e\n\nRESULT_WIN\x10\x01\x12\x0f\n\x0bRESULT_LOSE\x10\x02\x32\x8d\x01\n\x0f\x43hatDemoService\x12;\n\x08SayHello\x12\x16.chatdemo.HelloRequest\x1a\x17.chatdemo.HelloResponse\x12=\n\rWordChainChat\x12\x13.chatdemo.WordChain\x1a\x13.chatdemo.WordChain(\x01\x30\x01\x62\x06proto3"
 
 pool = Google::Protobuf::DescriptorPool.generated_pool
 pool.add_serialized_file(descriptor_data)
@@ -13,6 +13,6 @@ pool.add_serialized_file(descriptor_data)
 module Chatdemo
   HelloRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.HelloRequest").msgclass
   HelloResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.HelloResponse").msgclass
-  SendMessageRequest = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.SendMessageRequest").msgclass
-  SendMessageResponse = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.SendMessageResponse").msgclass
+  WordChain = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.WordChain").msgclass
+  Result = ::Google::Protobuf::DescriptorPool.generated_pool.lookup("chatdemo.Result").enummodule
 end
