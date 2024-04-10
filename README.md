@@ -2,6 +2,7 @@
 ※入力は全てひらがなでお願いします
 
 ## ざっくり構成図
+```
 root/
   ├ chatdemo/
   │  └ chatdemo.proto
@@ -9,6 +10,7 @@ root/
   │  └ app.rb
   └ server/
      └ main.go
+```
 
 ## 起動方法
 - server
