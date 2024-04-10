@@ -29,7 +29,7 @@ class ChatClient
     @stub.word_chain_chat(requests).each do |msg|
       case msg.result
       when :RESULT_WIN
-        puts "\nServer: #{msg.message} (You win)"
+        puts "\nServer: word: #{msg.word} message: #{msg.message} (You win)"
         break
       when :RESULT_LOSE
         puts "\nServer: #{msg.message} (You lose)"
