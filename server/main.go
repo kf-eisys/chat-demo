@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	pb "chatdemo/chatdemo"
+	interceptor "chatdemo/interceptor"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -36,48 +37,18 @@ func main() {
 
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			unaryInterceptor(),
+			interceptor.UnaryInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
-			streamInterceptor(),
+			interceptor.StreamInterceptor(),
 		),
 	)
-	pb.RegisterChatDemoServiceServer(s, &server{}) // 何してるの？
+	pb.RegisterChatDemoServiceServer(s, &server{})
 	reflection.Register(s)
 
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
-	}
-}
-
-func unaryInterceptor() grpc.UnaryServerInterceptor {
-	return func (ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		log.Println("===unary interceptor===")
-
-		// rpc名表示
-		rpcName := strings.Split(info.FullMethod, "/")[2]
-		log.Printf("===req name: %v===", rpcName)
-
-		// リクエスト表示
-		log.Printf("===req value: %v===", req)
-
-		return handler(ctx, req)
-	}
-}
-
-func streamInterceptor() grpc.StreamServerInterceptor {
-	return func (srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		log.Println("===stream interceptor===")
-
-		// rpc名表示
-		rpcName := strings.Split(info.FullMethod, "/")[2]
-		log.Printf("===req name: %v===", rpcName)
-
-		// リクエスト表示
-		// log.Printf("req value: %v\n", stream)
-
-		return handler(srv, stream)
 	}
 }
 
@@ -190,6 +161,7 @@ func (s *server) WordChainChat(stream pb.ChatDemoService_WordChainChatServer) er
 		if ok := usedWords[resWord]; ok || strings.HasSuffix(resWord, "ん") {
 			if err := stream.Send(&pb.WordChain{
 				Result: pb.Result_RESULT_WIN,
+				Word: resWord,
 				Message: "返せる単語がありません！ユーの勝ちでーす",
 			}); err != nil {
 				log.Printf("err: %v\n", err)
